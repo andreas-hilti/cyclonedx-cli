@@ -1,4 +1,4 @@
-// This file is part of CycloneDX CLI Tool
+﻿// This file is part of CycloneDX CLI Tool
 //
 // Licensed under the Apache License, Version 2.0 (the “License”);
 // you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ using Xunit;
 using Snapshooter;
 using Snapshooter.Xunit;
 using CycloneDX.Cli.Commands;
+using System.Diagnostics;
 
 namespace CycloneDX.Cli.Tests
 {
@@ -146,6 +147,13 @@ namespace CycloneDX.Cli.Tests
                 Assert.Equal(0, exitCode);
                 var bom = File.ReadAllText(outputFilename);
                 bom = Regex.Replace(bom, @"Created"": .*\n", "");
+                StackFrame[] stackFrames = new StackTrace(true).GetFrames();
+                Console.Write(stackFrames);
+                foreach(var frame in stackFrames)
+                {
+                    var filename = frame.GetFileName();
+                    Console.WriteLine(frame.GetMethod().Name + " " + (filename==null?"null":filename) + " " + frame.GetFileLineNumber());
+                }
                 Snapshot.Match(bom, SnapshotNameExtension.Create(inputFormat));
             }
         }
